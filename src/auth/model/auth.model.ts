@@ -13,7 +13,8 @@ export interface GoogleUser {
   firstName: string;
   lastName: string;
   picture: string;
-  accessToken: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 export interface RequestWithUser extends Request {

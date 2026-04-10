@@ -3,14 +3,17 @@ import {
   Controller,
   Get,
   Post,
+  Redirect,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import type { RequestWithUser } from './model/auth.model';
+import type { GoogleUser, RequestWithUser } from './model/auth.model';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { GoogleOauthGuard } from './guard/google-oauth.guard';
+import type { Response } from 'express';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -30,5 +33,25 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req: RequestWithUser) {
     return { data: req.user };
+  }
+
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuth() {
+    // Redirect ke halaman login resmi milik Google.
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  @Redirect()
+  async googleAuthRedirect(@Request() req: RequestWithUser) {
+    const googleUser = req.user as GoogleUser;
+    const user = await this.authService.validateOAuthUser(googleUser);
+
+    const access_token = await this.authService.generateAuthToken(user);
+
+    return {
+      url: `http://localhost:3000/dashboard?token=${access_token}`,
+    };
   }
 }

@@ -9,6 +9,8 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { User } from 'src/generated/prisma/client';
+import { GoogleUser } from './model/auth.model';
 
 @Injectable()
 export class AuthService {
@@ -99,5 +101,31 @@ export class AuthService {
         access_token: await this.jwtService.signAsync(payload),
       },
     };
+  }
+
+  async generateAuthToken(user: User) {
+    const payload = {
+      sub: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
+    };
+
+    const access_token = await this.jwtService.signAsync(payload);
+    return access_token;
+  }
+
+  async validateOAuthUser(googleUser: GoogleUser) {
+    let user = await this.usersService.getUserByEmail(googleUser.email);
+
+    if (!user) {
+      user = await this.usersService.create({
+        email: googleUser.email,
+        fullname: `${googleUser.firstName} ${googleUser.lastName}`,
+        role: 'CUSTOMER',
+      });
+    }
+
+    return user;
   }
 }

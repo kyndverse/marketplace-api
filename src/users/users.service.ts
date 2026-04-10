@@ -11,7 +11,6 @@ export class UsersService {
       data: {
         email: createUserDto.email,
         fullname: createUserDto.fullname,
-        password: createUserDto.password || '',
         role: createUserDto.role,
       },
     });
