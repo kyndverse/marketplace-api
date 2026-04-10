@@ -20,13 +20,26 @@ export class ResponseInterceptor<T> implements NestInterceptor<
   ): Observable<any> {
     const response = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
-      map((res) => ({
-        code: response.statusCode,
-        status: HttpStatus[response.statusCode],
-        message: res.message,
-        data: res.data,
-        meta: res.meta,
-      })),
+      map((res) => {
+        if (res === undefined) {
+          return res;
+        }
+
+        const isRedirect =
+          [301, 302, 307, 308].includes(response.statusCode) ||
+          (res && res.url);
+        if (isRedirect) {
+          return res;
+        }
+
+        return {
+          code: response.statusCode,
+          status: HttpStatus[response.statusCode],
+          message: res.message,
+          data: res.data,
+          meta: res.meta,
+        };
+      }),
     );
   }
 }
