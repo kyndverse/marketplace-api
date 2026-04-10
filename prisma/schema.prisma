@@ -6,9 +6,104 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  SUCCESS
+  EXPIRED
+  FAILED
+}
+
+model User {
+  id          String  @id @default(cuid())
+  email       String  @unique
+  password    String?
+  fullname    String
+  role        Role    @default(CUSTOMER)
+
+  imageUrl    String? @map("image_url")
+  imageId     String? @map("image_id")
+  
+  orders      Order[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  costPrice   Float    @map("cost_price")
+  salePrice   Float    @map("sale_price")
+  stock       Int      @default(0)
+
+  imageUrl    String?
+  imageId     String?
+  
+  orderItems  OrderItem[]
+
+  categoryId String    @map("category_id")
+  category   Category  @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  
+  items       OrderItem[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+// Pivot untuk menyimpan detail setiap barang dalam satu pesanan
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  costPrice  Float  @map("cost_price")
+  salePrice  Float  @map("sale_price")
+
+  @@map("order_items")
+}
+
+model Category {
+  id         String     @id @default(cuid())
+  name       String     @unique
+  slug       String     @unique
+  product    Product[]
+  
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  @@map("categories")
 }
