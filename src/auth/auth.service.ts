@@ -8,7 +8,7 @@ import { LoginDto } from './dto/login.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
-import { PrismaService } from 'src/common/prisma/prisma.service';
+import { PrismaService } from 'src/database/prisma.service';
 import { User } from 'src/generated/prisma/client';
 import { GoogleUser } from './model/auth.model';
 
