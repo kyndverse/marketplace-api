@@ -9,7 +9,7 @@
   code: Number;          // Http status code
   status: string;        // Reason phrase
   message?: string;
-  data: Record<string, any>;
+  data: Record<string, any> | Record<string, any>[];
   meta?: {
     page: number;        // Halaman saat ini
     limit: number;       // Jumlah item per halaman
