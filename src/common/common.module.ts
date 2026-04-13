@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { RolesGuard } from './guards/roles.guard';
 
 @Global()
 @Module({
@@ -16,5 +17,7 @@ import * as winston from 'winston';
       }),
     }),
   ],
+  providers: [RolesGuard],
+  exports: [RolesGuard],
 })
 export class CommonModule {}
