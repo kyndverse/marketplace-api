@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import type { GoogleUser, RequestWithUser } from './model/auth.model';
+import type {
+  RequestWithGoogleUser,
+  RequestWithUser,
+} from './model/auth.model';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { GoogleOauthGuard } from './guard/google-oauth.guard';
@@ -44,9 +47,8 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   @Redirect()
-  async googleAuthRedirect(@Request() req: RequestWithUser) {
-    const googleUser = req.user as GoogleUser;
-    const user = await this.authService.validateOAuthUser(googleUser);
+  async googleAuthRedirect(@Request() req: RequestWithGoogleUser) {
+    const user = await this.authService.validateOAuthUser(req.user);
 
     const access_token = await this.authService.generateAuthToken(user);
 

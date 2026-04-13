@@ -18,5 +18,9 @@ export interface GoogleUser {
 }
 
 export interface RequestWithUser extends Request {
-  user: JwtPayload | GoogleUser;
+  user: JwtPayload;
+}
+
+export interface RequestWithGoogleUser extends Request {
+  user: GoogleUser;
 }
