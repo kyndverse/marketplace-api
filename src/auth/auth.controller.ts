@@ -9,14 +9,11 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import type {
-  RequestWithGoogleUser,
-  RequestWithUser,
-} from './model/auth.model';
+import type { JwtPayload, RequestWithGoogleUser } from './model/auth.model';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { GoogleOauthGuard } from './guard/google-oauth.guard';
-import type { Response } from 'express';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -34,8 +31,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req: RequestWithUser) {
-    return { data: req.user };
+  getProfile(@CurrentUser() user: JwtPayload) {
+    return { data: user };
   }
 
   @Get('google')
