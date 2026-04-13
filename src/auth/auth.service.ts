@@ -57,7 +57,6 @@ export class AuthService {
     });
 
     return {
-      message: 'Register successfully!',
       data: {
         id: newUser.id,
         fullname: newUser.fullname,
@@ -90,7 +89,6 @@ export class AuthService {
     };
 
     return {
-      message: 'Sign In Successfully',
       data: {
         user: {
           id: payload.sub,

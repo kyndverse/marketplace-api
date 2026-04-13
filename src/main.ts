@@ -5,7 +5,6 @@ import { Logger } from 'winston';
 import { ValidationPipe } from '@nestjs/common';
 import { validationConfig } from './common/config/validation.config';
 import { HttpExceptionFilter } from './common/filters/http-exeption.filter';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,7 +15,6 @@ async function bootstrap() {
   app.useLogger(logger);
 
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new ResponseInterceptor());
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -14,17 +14,20 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { GoogleOauthGuard } from './guard/google-oauth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Message } from 'src/common/decorators/message.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @Message('Register Succesfully!')
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
+  @Message('SignIn Succesfully!')
   login(@Body() loginDto: LoginDto) {
     return this.authService.signIn(loginDto);
   }
