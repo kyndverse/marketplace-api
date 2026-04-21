@@ -1,5 +1,13 @@
 # API Documentation
 
+## List
+
+- [Auth](#authentication)
+- [User](#user)
+- [Order](#order)
+- [About](#about)
+- [Category](#category)
+
 ---
 
 ## Authentication
@@ -90,7 +98,7 @@ Authenticate a user and retrieve an access token.
       "fullname": "John Doe",
       "email": "john@example.com"
     },
-    "access_token": "eabcdopewrybsdfdsmnfiass....",
+    "access_token": "eabcdopewrybsdfdsmnfiass...."
   }
 }
 ```
@@ -106,5 +114,230 @@ Initiates Google OAuth2 login flow. **Redirects the user to Google's official lo
 **Response after callback**
 
 - Redirect : `https://front_end_domain/dashboard?token=<access_token>`
+
+---
+
+### Get User Profile
+
+Untuk mendapat data user profil.
+
+- Endpoint: `GET /api/auth/me`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": {
+    "id": "cuid....",
+    "email": "putri@example.com",
+    "fullname": "Putri",
+    "role": "ADMIN",
+    "phoneNumber": "0....",
+    "imageUrl": "https://...."
+  }
+}
+```
+
+---
+
+## Order
+
+### Get All Order History
+
+Untuk mendapatkan semua data order.
+
+- Endpoint: `GET /api/orders?page=1&limit=3`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": [
+    {
+      "id": "cuid....", // Order
+      "user": {
+        "id": "cuid...",
+        "email": "putri@example.com",
+        "fullname": "Kinanthi Putri",
+        "phoneNumber": "0...."
+      },
+      "totalAmount": 20000,
+      "status": "PENDING",
+      "createdAt": "....",
+      "updatedAt": "....",
+      "orderItem": [
+        {
+          "id": "cuid....", // Order item
+          "quantity": 2,
+          "costPrice": 9000,
+          "salePrice": 10000,
+          "product": {
+            "id": "cuid...", // Product
+            "name": "Nama barang",
+            "description": "",
+            "costPrice": 9000,
+            "salePrice": 10000,
+            "stock": 4,
+            "imageUrl": "https://....",
+            "category": {
+              "name": "Elektronik" // Product category
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "page": 1, // Halaman saat ini
+    "limit": 3, // Jumlah item per halaman
+    "totalPages": 20 // Total halaman
+  }
+}
+```
+
+---
+
+### Get Order Histories By User Id
+
+Untuk mendapatkan data riwayat order user tertentu.
+
+- Endpoint: `GET /api/orders/:id`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": [
+    {
+      "id": "cuid....", // Order
+      "totalAmount": 20000,
+      "status": "PENDING",
+      "createdAt": "...",
+      "updatedAt": "...",
+      "orderItem": [
+        {
+          "id": "cuid....", // Order item
+          "quantity": 2,
+          "costPrice": 9000,
+          "salePrice": 10000,
+          "product": {
+            "id": "cuid...", // Product
+            "name": "Nama barang",
+            "description": "",
+            "costPrice": 9000,
+            "salePrice": 10000,
+            "stock": 4,
+            "imageUrl": "https://....",
+            "category": {
+              "name": "Elektronik" // Product category
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "page": 1, // Halaman saat ini
+    "limit": 3, // Jumlah item per halaman
+    "totalPages": 20 // Total halaman
+  }
+}
+```
+
+---
+
+### Recent Order Order Histories
+
+Untuk mendapatkan 3 pesanan terakhir user yang login.
+
+- Endpoint: `GET /api/orders/recent-order`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": [
+    {
+      "id": "cuid....", // Order
+      "totalAmount": 20000,
+      "status": "PENDING",
+      "createdAt": "...",
+      "updatedAt": "...",
+      "orderItem": [
+        {
+          "id": "cuid....", // Order item
+          "quantity": 2,
+          "product": {
+            "name": "Nama barang"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## About
+
+> Berisi endpoint untuk mendapatkan config toko
+
+### Get Market Detail Info
+
+Untuk mengetahui toko buka atau tidak.
+
+- Endpoint: `GET /api/about`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": {
+    "isOpen": "true"
+  }
+}
+```
+
+---
+
+## Category
+
+### Get All Category
+
+Untuk mendapatkan semua jenis kategory
+
+- Endpoint: `GET /api/category`
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": [
+    {
+      "id": "cuid....",
+      "name": "Elektronik",
+      "slug": "elektronik"
+    },
+    {
+      "id": "cuid....",
+      "name": "Sembako",
+      "slug": "sembako"
+    }
+  ]
+}
+```
 
 ---
