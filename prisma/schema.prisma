@@ -20,25 +20,52 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  SUCCESS
-  EXPIRED
-  FAILED
+  PROCESSING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  WAITING_VERIFICATION
+  PAID
+  REJECTED
+}
+
+enum PaymentMethod {
+  TUNAI
+  QRIS
+}
+
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
 model User {
-  id          String  @id @default(cuid())
-  email       String  @unique
-  password    String?
-  fullname    String
-  role        Role    @default(CUSTOMER)
+  id            String  @id @default(cuid())
+  fullname      String
+  phoneNumber   String? @map("phone_number")
+  email         String? @unique
+  password      String?
 
-  imageUrl    String? @map("image_url")
-  imageId     String? @map("image_id")
+  role          Role    @default(CUSTOMER)
+
+  imageUrl      String? @map("image_url")
+  imageId       String? @map("image_id")
+
+  emailVerified DateTime? @map("email_verified")
   
-  orders      Order[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt      @map("updated_at")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orders        Order[]
 
   @@map("users")
 }
@@ -51,59 +78,68 @@ model Product {
   salePrice   Float    @map("sale_price")
   stock       Int      @default(0)
 
-  imageUrl    String?
-  imageId     String?
+  imageUrl    String?  @map("image_url")
+  imageId     String?  @map("image_id")
   
   orderItems  OrderItem[]
 
-  categoryId String    @map("category_id")
-  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false) @map("is_deleted")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt      @map("updated_at")
 
   @@map("products")
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
+  id            String      @id @default(cuid())
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id])
   
-  totalAmount Float
-  status      OrderStatus @default(PENDING)
+  totalAmount   Float       @map("total_amount")
+  status        OrderStatus @default(PENDING)
   
-  items       OrderItem[]
+  items         OrderItem[]
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  paymentMethod PaymentMethod @map("payment_method")
+  paymentStatus PaymentStatus @map("payment_status")
+
+  paymentProof    String?     @map("payment_proof")
+  paymentProofId  String?     @map("payment_proof_id")
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt      @map("updated_at")
 
   @@map("orders")
 }
 
-// Pivot untuk menyimpan detail setiap barang dalam satu pesanan
 model OrderItem {
   id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String  @map("order_id")
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   
-  productId String
+  productId String  @map("product_id")
   product   Product @relation(fields: [productId], references: [id])
   
   quantity  Int
-  costPrice  Float  @map("cost_price")
-  salePrice  Float  @map("sale_price")
+  costPrice Float   @map("cost_price")
+  salePrice Float   @map("sale_price")
 
   @@map("order_items")
 }
 
 model Category {
-  id         String     @id @default(cuid())
-  name       String     @unique
-  slug       String     @unique
-  product    Product[]
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  products    Product[]
+  description String?
   
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @updatedAt @map("updated_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt      @map("updated_at")
+
   @@map("categories")
 }
