@@ -17,3 +17,10 @@ export class Product {
     name: string;
   };
 }
+
+export class UploadImageResponse {
+  id!: string;
+  name!: string;
+  imageUrl!: string | null;
+  imageId!: string | null;
+}

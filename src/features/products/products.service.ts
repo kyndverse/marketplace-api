@@ -7,12 +7,16 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/database/prisma.service';
 import { ApiResponse } from 'src/model/response.model';
-import { Product } from './model/products.model';
+import { Product, UploadImageResponse } from './model/products.model';
 import { FindProductQueryDto } from './dto/find-query-product.dto';
+import { CloudinaryService } from 'src/infrastructure/cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   async create(
     createProductDto: CreateProductDto,
@@ -150,6 +154,47 @@ export class ProductsService {
     return {
       data: null,
       message: 'Delete product successfully!',
+    };
+  }
+
+  async uploadImage(
+    productId: string,
+    file: Express.Multer.File,
+  ): Promise<ApiResponse<UploadImageResponse>> {
+    const product = await this.prismaService.product.findUnique({
+      where: { id: productId },
+      select: { imageId: true },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found!');
+    }
+
+    if (product.imageId) {
+      await this.cloudinaryService.deleteImage(product.imageId);
+    }
+
+    const uploadResult = await this.cloudinaryService.uploadImage(
+      file,
+      'products',
+    );
+
+    const updatedProduct = await this.prismaService.product.update({
+      where: { id: productId },
+      data: {
+        imageId: uploadResult.public_id,
+        imageUrl: uploadResult.secure_url,
+      },
+      select: {
+        id: true,
+        name: true,
+        imageId: true,
+        imageUrl: true,
+      },
+    });
+
+    return {
+      data: updatedProduct,
     };
   }
 }

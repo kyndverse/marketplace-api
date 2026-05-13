@@ -98,7 +98,7 @@ Untuk mengubah foto product.
 
 > Request menggunakan multipart/form-data.
 
-- Endpoint: `PATCH /api/products/:id/edit-image`
+- Endpoint: `PATCH /api/products/:id/image`
 
 **Form Data**
 
