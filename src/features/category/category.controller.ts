@@ -17,7 +17,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiResponse } from 'src/model/response.model';
 import { Category } from 'src/generated/prisma/client';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { FindProductQueryDto } from 'src/products/dto/find-query-product.dto';
+import { FindProductQueryDto } from 'src/features/products/dto/find-query-product.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('/api/category')

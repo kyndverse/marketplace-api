@@ -33,7 +33,7 @@ export class ProductsService {
           select: { id: true, name: true },
         },
       },
-      omit: { categoryId: true },
+      omit: { categoryId: true, isDeleted: true },
     });
 
     return {
@@ -56,7 +56,7 @@ export class ProductsService {
           select: { id: true, name: true },
         },
       },
-      omit: { categoryId: true },
+      omit: { categoryId: true, isDeleted: true },
       orderBy: { createdAt: 'desc' },
       take: limit,
       skip: skip,
@@ -88,7 +88,7 @@ export class ProductsService {
           },
         },
       },
-      omit: { categoryId: true },
+      omit: { categoryId: true, isDeleted: true },
     });
 
     if (!product) {
@@ -124,7 +124,7 @@ export class ProductsService {
           },
         },
       },
-      omit: { categoryId: true },
+      omit: { categoryId: true, isDeleted: true },
     });
 
     return {
