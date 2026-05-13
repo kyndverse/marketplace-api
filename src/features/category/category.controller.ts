@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
@@ -15,6 +16,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiResponse } from 'src/model/response.model';
 import { Category } from 'src/generated/prisma/client';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { FindProductQueryDto } from 'src/products/dto/find-query-product.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('/api/category')
@@ -31,8 +34,10 @@ export class CategoryController {
   }
 
   @Get()
-  findAll(): Promise<ApiResponse<Category[]>> {
-    return this.categoryService.findAll();
+  findAll(
+    @Query() query: FindProductQueryDto,
+  ): Promise<ApiResponse<Category[]>> {
+    return this.categoryService.findAll(query);
   }
 
   @Roles('ADMIN')
@@ -40,9 +45,9 @@ export class CategoryController {
   @Patch('/:id')
   update(
     @Param('id') id: string,
-    @Body() createCategoryDto: CreateCategoryDto,
+    @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<ApiResponse<Category>> {
-    return this.categoryService.update(id, createCategoryDto);
+    return this.categoryService.update(id, updateCategoryDto);
   }
 
   @Roles('ADMIN')

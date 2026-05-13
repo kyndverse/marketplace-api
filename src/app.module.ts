@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './infrastructure/cloudinary/cloudinary.module';
 import { PrismaModule } from './database/prisma.module';
 import { ProductsModule } from './products/products.module';
-import { CategoryModule } from './category/category.module';
+import { CategoryModule } from './features/category/category.module';
 
 @Module({
   imports: [

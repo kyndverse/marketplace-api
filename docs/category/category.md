@@ -23,7 +23,10 @@ Untuk membuat jenis kategori baru.
   "data": {
     "id": "cuid....",
     "name": "Elektronik",
-    "slug": "elektronik"
+    "slug": "elektronik",
+    "description": "Semua barang elektronik",
+    "createdAt": "DATE",
+    "updatedAt": "DATE"
   }
 }
 ```
@@ -34,13 +37,14 @@ Untuk membuat jenis kategori baru.
 
 Untuk mendapatkan semua jenis kategori.
 
-- Endpoint: `PUT /api/category`
+- Endpoint: `PATCH /api/category/:id`
 
 **Request Body:**
 
 ```json
 {
-  "name": "Minuman"
+  "name": "Minuman",
+  "description": "listrik"
 }
 ```
 
@@ -53,7 +57,10 @@ Untuk mendapatkan semua jenis kategori.
   "data": {
     "id": "cuid....",
     "name": "Minuman",
-    "slug": "minuman"
+    "slug": "minuman",
+    "description": "Semua barang listrik",
+    "createdAt": "DATE",
+    "updatedAt": "DATE"
   }
 }
 ```
@@ -107,6 +114,11 @@ Untuk mendapatkan semua jenis kategory
       "createdAt": "",
       "updatedAt": ""
     }
-  ]
+  ],
+  "meta": {
+    "page": 1, // Halaman saat ini
+    "limit": 3, // Jumlah item per halaman
+    "totalPages": 20 // Total halaman
+  }
 }
 ```
