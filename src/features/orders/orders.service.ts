@@ -6,9 +6,12 @@ import {
 import { PrismaService } from 'src/database/prisma.service';
 import { GetOrdersQueryDto } from './dto/get-query-order.dto';
 import { ApiResponse } from 'src/model/response.model';
-import { OrderHistoryResponse } from './model/orders.model';
+import {
+  OrderHistoryResponse,
+  UpdatedOrderStatusResponse,
+} from './model/orders.model';
 import { CreateOrderDto } from './dto/create-order.dtp';
-import { Prisma } from 'src/generated/prisma/client';
+import { OrderStatus, Prisma } from 'src/generated/prisma/client';
 import { JwtPayload } from 'src/auth/model/auth.model';
 
 @Injectable()
@@ -223,6 +226,49 @@ export class OrdersService {
           quantity: item.quantity,
         })),
       },
+    };
+  }
+
+  async updateOrderStatus(
+    orderId: string,
+    status: OrderStatus,
+  ): Promise<ApiResponse<UpdatedOrderStatusResponse>> {
+    const existingOrder = await this.prismaService.order.findUnique({
+      where: {
+        id: orderId,
+      },
+
+      select: {
+        id: true,
+        status: true,
+      },
+    });
+
+    if (!existingOrder) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (
+      existingOrder.status === 'COMPLETED' ||
+      existingOrder.status === 'CANCELLED'
+    ) {
+      throw new BadRequestException(
+        `Cannot update ${existingOrder.status.toLowerCase()} order`,
+      );
+    }
+
+    const updatedOrder = await this.prismaService.order.update({
+      where: { id: orderId },
+      data: { status },
+      select: {
+        id: true,
+        status: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      data: updatedOrder,
     };
   }
 }

@@ -19,13 +19,19 @@ export class OrderHistoryResponse {
   paymentStatus!: PaymentStatus;
   paymentMethod!: PaymentMethod;
   totalAmount!: number;
-  paymentProof!: string | null;
+  paymentProof?: string | null;
   items!: OrderItem[];
   user?: {
     id: string;
     fullname: string;
     email: string | null;
     phoneNumber: string | null;
-    imageUrl: string | null;
+    imageUrl?: string | null;
   };
+}
+
+export class UpdatedOrderStatusResponse {
+  id!: string;
+  status!: OrderStatus;
+  updatedAt?: Date;
 }
