@@ -10,6 +10,7 @@ import {
   OrderHistoryResponse,
   UpdatedOrderStatusResponse,
   UpdatedPaymentStatusResponse,
+  UploadPaymentProofResponse,
 } from './model/orders.model';
 import { CreateOrderDto } from './dto/create-order.dtp';
 import {
@@ -18,10 +19,14 @@ import {
   Prisma,
 } from 'src/generated/prisma/client';
 import { JwtPayload } from 'src/auth/model/auth.model';
+import { CloudinaryService } from 'src/infrastructure/cloudinary/cloudinary.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   async getOrderHistory(
     user: JwtPayload,
@@ -311,6 +316,47 @@ export class OrdersService {
       select: {
         id: true,
         paymentStatus: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      data: updatedOrder,
+    };
+  }
+
+  async uploadPaymentProof(
+    orderId: string,
+    file: Express.Multer.File,
+  ): Promise<ApiResponse<UploadPaymentProofResponse>> {
+    const order = await this.prismaService.order.findUnique({
+      where: { id: orderId },
+      select: { paymentProofId: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Product not found!');
+    }
+
+    if (order.paymentProofId) {
+      await this.cloudinaryService.deleteImage(order.paymentProofId);
+    }
+
+    const uploadResult = await this.cloudinaryService.uploadImage(
+      file,
+      'payment-proof',
+    );
+
+    const updatedOrder = await this.prismaService.order.update({
+      where: { id: orderId },
+      data: {
+        paymentProof: uploadResult.public_id,
+        paymentProofId: uploadResult.secure_url,
+      },
+      select: {
+        id: true,
+        paymentProof: true,
+        paymentProofId: true,
         updatedAt: true,
       },
     });

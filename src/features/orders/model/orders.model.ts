@@ -41,3 +41,10 @@ export class UpdatedPaymentStatusResponse {
   paymentStatus!: PaymentStatus;
   updatedAt?: Date;
 }
+
+export class UploadPaymentProofResponse {
+  id!: string;
+  paymentProof!: string | null;
+  paymentProofId!: string | null;
+  updatedAt?: Date;
+}

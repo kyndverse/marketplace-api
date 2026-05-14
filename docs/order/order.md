@@ -49,6 +49,8 @@ Untuk melakukan order.
 }
 ```
 
+---
+
 ## Get Order History
 
 Untuk mendapatkan history order user yang sedang login.
@@ -172,6 +174,37 @@ Payment status : `PENDING, WAITING_VERIFICATION, PAID, REJECTED`
   "data": {
     "id": "cuid....",
     "paymentStatus": "WAIT_VERIFICATION",
+    "updatedAt": "updatedAt"
+  }
+}
+```
+
+---
+
+## Upload Payment Proof
+
+Untuk upload bukti pembayaran QRIS.
+
+> Request menggunakan multipart/form-data.
+
+- Endpoint: `PATCH /api/orders/:id/payment-proof`
+
+**Form Data**
+
+| Field   | Type   | Keterangan                                            |
+| ------- | ------ | ----------------------------------------------------- |
+| `image` | `file` | Wajib. Format: `png`, `jpeg`, `jpg`, `webp`. Maks 2MB |
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": {
+    "id": "cuid....",
+    "paymentProof": "https://....",
+    "paymentProofId": "public_id"
     "updatedAt": "updatedAt"
   }
 }
