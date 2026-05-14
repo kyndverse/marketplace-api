@@ -1,49 +1,71 @@
 # Order
 
-## Get User Recent Active Order
+## Create Order
 
-Untuk mendapatkan 3 order yang sedang aktif berdasarkan user yang sedang login.
+Untuk melakukan order.
 
-- Endpoint: `GET /api/orders/active`
+- Endpoint: `POST /api/orders`
+
+**Request Body:**
+
+```json
+{
+  "items": [
+    {
+      "productId": "Aqua Galon",
+      "quantity": 1
+    }
+  ],
+  "paymentMethod": "CASH"
+}
+```
 
 **Response data:**
 
 ```json
 {
-  "code": 200,
-  "status": "OK",
+  "code": 201,
+  "status": "CREATED",
   "data": [
     {
       "id": "cuid....",
-      "date": "createdAt",
-      "status": "SEDANG DISIAPKAN",
-      "statusCode": "PROCESSING",
-      "product": "Minyak",
-      "imageUrl": "https://cdn....",
-      "additionalItems": 1,
-      "total": 12000
-    },
-    {
-      "id": "cuid....",
-      "date": "createdAt",
-      "status": "BELUM DISIAPKAN",
-      "statusCode": "PENDING",
-      "product": "Minyak",
-      "imageUrl": "https://cdn....",
-      "additionalItems": 3,
-      "total": 160000
+      "createdAt": "createdAt",
+      "orderStatus": "PENDING",
+      "paymentStatus": "PENDING",
+      "paymentMethod": "CASH",
+      "totalAmount": 25000,
+      "paymentProof": null,
+      "items": [
+        {
+          "id": "cuid....",
+          "name": "Aqua Galon",
+          "price": 25000,
+          "quantity": 1,
+          "imageUrl": "https://...."
+        }
+      ]
     }
   ]
 }
 ```
 
----
+## Get Order History
 
-## Get All Active Orders
+Untuk mendapatkan history order user yang sedang login.
 
-Untuk mendapatkan semua order yang sedang aktif.
+> Jika role admin maka dapat melihat semua order history sedangkan role customer maka hanya dapat melihat order history dirinya sendiri.
 
-- Endpoint: `GET /api/orders?page=1&limit=3`
+- Endpoint: `GET /api/orders`
+
+**Query Parameters**
+
+| Parameter | Type   | Required | Default | Description                   |
+| --------- | ------ | -------- | ------- | ----------------------------- |
+| page      | number | No       | 1       | Page number for pagination    |
+| limit     | number | No       | 10      | Number of items per page      |
+| status    | string | No       | -       | Filter orders by order status |
+
+status: `PENDING, PROCESSING, READY, COMPLETED, CANCELLED`
 
 **Response data:**
 
@@ -54,73 +76,19 @@ Untuk mendapatkan semua order yang sedang aktif.
   "data": [
     {
       "id": "cuid....",
-      "date": "createdAt",
-      "status": "SEDANG DISIAPKAN",
-      "statusCode": "PROCESSING",
+      "createdAt": "createdAt",
+      "orderStatus": "PENDING",
+      "paymentStatus": "PENDING",
+      "paymentMethod": "TUNAI",
       "totalAmount": 25000,
-      "items": {
-        "id": "cuid....",
-        "name": "Aqua Galon",
-        "price": 25000,
-        "quantity": 1,
-        "imageUrl": "https://....",
-      };
-    },
-  ],
-  "meta": {
-    "page": 1, // Halaman saat ini
-    "limit": 3, // Jumlah item per halaman
-    "totalPages": 20 // Total halaman
-  }
-}
-
-```
-
----
-
-## Get All Order History
-
-Untuk mendapatkan semua data order (admin side).
-
-- Endpoint: `GET /api/orders/admin?page=1&limit=3`
-
-**Response data:**
-
-```json
-{
-  "code": 200,
-  "status": "OK",
-  "data": [
-    {
-      "id": "cuid....", // Order
-      "user": {
-        "id": "cuid...",
-        "email": "putri@example.com",
-        "fullname": "Kinanthi Putri",
-        "phoneNumber": "0...."
-      },
-      "totalAmount": 20000,
-      "status": "PENDING",
-      "createdAt": "....",
-      "updatedAt": "....",
-      "orderItem": [
+      "paymentProof": null,
+      "items": [
         {
-          "id": "cuid....", // Order item
-          "quantity": 2,
-          "costPrice": 9000,
-          "salePrice": 10000,
-          "product": {
-            "id": "cuid...", // Product
-            "name": "Nama barang",
-            "description": "",
-            "costPrice": 9000,
-            "salePrice": 10000,
-            "stock": 4,
-            "imageUrl": "https://....",
-            "category": {
-              "name": "Elektronik" // Product category
-            }
-          }
+          "id": "cuid....",
+          "name": "Aqua Galon",
+          "salePrice": 25000,
+          "quantity": 1,
+          "imageUrl": "https://...."
         }
       ]
     }
@@ -133,13 +101,35 @@ Untuk mendapatkan semua data order (admin side).
 }
 ```
 
+> Info: Ada tambahan field user jika rolenya admin:
+
+```json
+{
+  "user": {
+    "id": "cuid....",
+    "fullname": "Putri",
+    "email": "putri@gmail.com",
+    "phoneNumber": null,
+    "imageUrl": null
+  }
+}
+```
+
 ---
 
-## Get Order Histories By User Id
+## Update Order Status
 
-Untuk mendapatkan data riwayat order user tertentu. Baik order aktif order masa lampau yang berhasil, dibatalkan dll.
+Untuk edit status order tertentu.
 
-- Endpoint: `GET /api/orders/:id?status=pending`
+- Endpoint: `PATCH /api/admin/orders/:id/status`
+
+**Request Body:**
+
+```json
+{
+  "status": "READY"
+}
+```
 
 **Response data:**
 
@@ -147,39 +137,10 @@ Untuk mendapatkan data riwayat order user tertentu. Baik order aktif order masa 
 {
   "code": 200,
   "status": "OK",
-  "data": [
-    {
-      "id": "cuid....", // Order
-      "totalAmount": 20000,
-      "status": "PENDING",
-      "createdAt": "...",
-      "updatedAt": "...",
-      "orderItem": [
-        {
-          "id": "cuid....", // Order item
-          "quantity": 2,
-          "costPrice": 9000,
-          "salePrice": 10000,
-          "product": {
-            "id": "cuid...", // Product
-            "name": "Nama barang",
-            "description": "",
-            "costPrice": 9000,
-            "salePrice": 10000,
-            "stock": 4,
-            "imageUrl": "https://....",
-            "category": {
-              "name": "Elektronik" // Product category
-            }
-          }
-        }
-      ]
-    }
-  ],
-  "meta": {
-    "page": 1, // Halaman saat ini
-    "limit": 3, // Jumlah item per halaman
-    "totalPages": 20 // Total halaman
+  "data": {
+    "id": "cuid....",
+    "status": "READY",
+    "updatedAt": "updatedAt"
   }
 }
 ```
