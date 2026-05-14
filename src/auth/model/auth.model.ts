@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { Role } from 'src/generated/prisma/enums';
 
 export interface JwtPayload {
-  sub: number;
+  sub: string;
   fullname: string;
   email: string;
   role: Role;
