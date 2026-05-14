@@ -144,3 +144,35 @@ Untuk edit status order tertentu.
   }
 }
 ```
+
+---
+
+## Update Payment Status
+
+Untuk edit status pembayaran order tertentu.
+
+- Endpoint: `PATCH /api/admin/orders/:id/payment-status`
+
+Payment status : `PENDING, WAITING_VERIFICATION, PAID, REJECTED`
+
+**Request Body:**
+
+```json
+{
+  "paymentStatus": "WAITING_VERIFICATION"
+}
+```
+
+**Response data:**
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": {
+    "id": "cuid....",
+    "paymentStatus": "WAIT_VERIFICATION",
+    "updatedAt": "updatedAt"
+  }
+}
+```

@@ -5,7 +5,11 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ApiResponse } from 'src/model/response.model';
-import { UpdatedOrderStatusResponse } from './model/orders.model';
+import {
+  UpdatedOrderStatusResponse,
+  UpdatedPaymentStatusResponse,
+} from './model/orders.model';
+import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 
 @Roles('ADMIN')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -19,5 +23,13 @@ export class AdminOrdersController {
     @Body() dto: UpdateOrderStatusDto,
   ): Promise<ApiResponse<UpdatedOrderStatusResponse>> {
     return this.ordersService.updateOrderStatus(id, dto.status);
+  }
+
+  @Patch(':id/payment-status')
+  updatePaymentStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdatePaymentStatusDto,
+  ): Promise<ApiResponse<UpdatedPaymentStatusResponse>> {
+    return this.ordersService.updatePaymentStatus(id, dto.paymentStatus);
   }
 }

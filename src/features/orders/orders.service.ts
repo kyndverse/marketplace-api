@@ -9,9 +9,14 @@ import { ApiResponse } from 'src/model/response.model';
 import {
   OrderHistoryResponse,
   UpdatedOrderStatusResponse,
+  UpdatedPaymentStatusResponse,
 } from './model/orders.model';
 import { CreateOrderDto } from './dto/create-order.dtp';
-import { OrderStatus, Prisma } from 'src/generated/prisma/client';
+import {
+  OrderStatus,
+  PaymentStatus,
+  Prisma,
+} from 'src/generated/prisma/client';
 import { JwtPayload } from 'src/auth/model/auth.model';
 
 @Injectable()
@@ -263,6 +268,49 @@ export class OrdersService {
       select: {
         id: true,
         status: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      data: updatedOrder,
+    };
+  }
+
+  async updatePaymentStatus(
+    orderId: string,
+    paymentStatus: PaymentStatus,
+  ): Promise<ApiResponse<UpdatedPaymentStatusResponse>> {
+    const existingOrder = await this.prismaService.order.findUnique({
+      where: {
+        id: orderId,
+      },
+
+      select: {
+        id: true,
+        paymentStatus: true,
+      },
+    });
+
+    if (!existingOrder) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (
+      existingOrder.paymentStatus === 'PAID' ||
+      existingOrder.paymentStatus === 'REJECTED'
+    ) {
+      throw new BadRequestException(
+        `Cannot update ${existingOrder.paymentStatus.toLowerCase()} payment`,
+      );
+    }
+
+    const updatedOrder = await this.prismaService.order.update({
+      where: { id: orderId },
+      data: { paymentStatus },
+      select: {
+        id: true,
+        paymentStatus: true,
         updatedAt: true,
       },
     });

@@ -35,3 +35,9 @@ export class UpdatedOrderStatusResponse {
   status!: OrderStatus;
   updatedAt?: Date;
 }
+
+export class UpdatedPaymentStatusResponse {
+  id!: string;
+  paymentStatus!: PaymentStatus;
+  updatedAt?: Date;
+}
