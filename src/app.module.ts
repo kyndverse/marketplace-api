@@ -6,6 +6,7 @@ import { CloudinaryModule } from './infrastructure/cloudinary/cloudinary.module'
 import { PrismaModule } from './database/prisma.module';
 import { ProductsModule } from './features/products/products.module';
 import { CategoryModule } from './features/category/category.module';
+import { OrdersModule } from './features/orders/orders.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CategoryModule } from './features/category/category.module';
     CloudinaryModule,
     ProductsModule,
     CategoryModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
