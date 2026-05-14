@@ -6,37 +6,42 @@ import {
 import { PrismaService } from 'src/database/prisma.service';
 import { GetOrdersQueryDto } from './dto/get-query-order.dto';
 import { ApiResponse } from 'src/model/response.model';
-import { Order } from './model/orders.model';
+import { OrderHistoryResponse } from './model/orders.model';
 import { CreateOrderDto } from './dto/create-order.dtp';
 import { Prisma } from 'src/generated/prisma/client';
+import { JwtPayload } from 'src/auth/model/auth.model';
 
 @Injectable()
 export class OrdersService {
   constructor(private prismaService: PrismaService) {}
 
   async getOrderHistory(
-    currentUserId: string,
+    user: JwtPayload,
     query: GetOrdersQueryDto,
-  ): Promise<ApiResponse<Order[]>> {
+  ): Promise<ApiResponse<OrderHistoryResponse[]>> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
 
     const skip = (page - 1) * limit;
 
+    const isAdmin = user.role === 'ADMIN';
+    const whereClause = isAdmin
+      ? {
+          status: query.status,
+        }
+      : {
+          userId: user.sub,
+          status: query.status,
+        };
+
     const orderCount = await this.prismaService.order.count({
-      where: {
-        userId: currentUserId,
-        status: query.status,
-      },
+      where: whereClause,
     });
 
-    const totalPages = Math.ceil(orderCount / limit);
+    const totalPages = Math.max(1, Math.ceil(orderCount / limit));
 
     const orders = await this.prismaService.order.findMany({
-      where: {
-        userId: currentUserId,
-        status: query.status,
-      },
+      where: whereClause,
       take: limit,
       skip: skip,
       orderBy: { createdAt: 'desc' },
@@ -48,12 +53,25 @@ export class OrdersService {
         totalAmount: true,
         paymentProof: true,
         paymentMethod: true,
+        ...(isAdmin && {
+          user: {
+            select: {
+              id: true,
+              fullname: true,
+              email: true,
+              phoneNumber: true,
+              imageUrl: true,
+            },
+          },
+        }),
         items: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            salePrice: true,
             product: {
               select: {
                 name: true,
-                salePrice: true,
                 imageUrl: true,
               },
             },
@@ -62,20 +80,14 @@ export class OrdersService {
       },
     });
 
-    const mappedOrders = orders.map((order) => ({
-      id: order.id,
-      date: order.createdAt,
-      orderStatus: order.status,
-      paymentStatus: order.paymentStatus,
-      paymentMethod: order.paymentMethod,
-      totalAmount: order.totalAmount,
-      paymentProof: order.paymentProof,
-      items: order.items.map((item) => ({
-        id: item.id,
-        name: item.product.name,
-        price: item.product.salePrice,
-        quantity: item.quantity,
-        imageUrl: item.product.imageUrl,
+    const mappedOrders = orders.map(({ status, items, ...rest }) => ({
+      ...rest,
+      orderStatus: status,
+
+      items: items.map(({ product, ...item }) => ({
+        ...item,
+        name: product.name,
+        imageUrl: product.imageUrl,
       })),
     }));
 
@@ -85,6 +97,7 @@ export class OrdersService {
         page: page,
         limit: limit,
         totalPages: totalPages,
+        totalItems: orderCount,
       },
     };
   }
@@ -92,7 +105,7 @@ export class OrdersService {
   async createOrder(
     userId: string,
     dto: CreateOrderDto,
-  ): Promise<ApiResponse<Order>> {
+  ): Promise<ApiResponse<OrderHistoryResponse>> {
     const orderTransaction = await this.prismaService.$transaction(
       async (tx) => {
         let totalAmount = 0;
@@ -196,7 +209,7 @@ export class OrdersService {
     return {
       data: {
         id: orderTransaction.id,
-        date: orderTransaction.createdAt,
+        createdAt: orderTransaction.createdAt,
         orderStatus: orderTransaction.status,
         paymentStatus: orderTransaction.paymentStatus,
         paymentMethod: orderTransaction.paymentMethod,
@@ -206,7 +219,7 @@ export class OrdersService {
           id: item.id,
           name: item.product.name,
           imageUrl: item.product.imageUrl,
-          price: item.product.salePrice,
+          salePrice: item.product.salePrice,
           quantity: item.quantity,
         })),
       },
