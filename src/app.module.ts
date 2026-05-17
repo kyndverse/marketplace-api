@@ -8,6 +8,7 @@ import { ProductsModule } from './features/products/products.module';
 import { CategoryModule } from './features/category/category.module';
 import { OrdersModule } from './features/orders/orders.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
+import { ReportsModule } from './features/reports/reports.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { NotificationsModule } from './features/notifications/notifications.modu
     CategoryModule,
     OrdersModule,
     NotificationsModule,
+    ReportsModule,
   ],
   controllers: [],
   providers: [],
