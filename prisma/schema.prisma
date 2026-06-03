@@ -54,6 +54,7 @@ model User {
   phoneNumber   String? @map("phone_number")
   email         String? @unique
   password      String?
+  address       String?
 
   role          Role    @default(CUSTOMER)
 
