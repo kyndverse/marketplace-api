@@ -11,8 +11,7 @@ import {
 } from './model/orders.model';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 
-@Roles('ADMIN')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('/api/admin/orders')
 export class AdminOrdersController {
   constructor(private ordersService: OrdersService) {}
@@ -25,6 +24,8 @@ export class AdminOrdersController {
     return this.ordersService.updateOrderStatus(id, dto.status);
   }
 
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
   @Patch(':id/payment-status')
   updatePaymentStatus(
     @Param('id') id: string,
