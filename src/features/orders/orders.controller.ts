@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,11 +27,16 @@ import { CreateOrderDto } from './dto/create-order.dtp';
 import type { JwtPayload } from 'src/auth/model/auth.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import type { Response } from 'express';
+import { ReportsService } from '../reports/reports.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('/api/orders')
 export class OrdersController {
-  constructor(private ordersService: OrdersService) {}
+  constructor(
+    private ordersService: OrdersService,
+    private reportsService: ReportsService,
+  ) {}
 
   @Post()
   createOrder(
@@ -67,5 +73,18 @@ export class OrdersController {
     @Param('id') orderId: string,
   ): Promise<ApiResponse<UploadPaymentProofResponse>> {
     return this.ordersService.uploadPaymentProof(orderId, file);
+  }
+
+  @Get(':id/receipt')
+  async exportReceipt(@Param('id') id: string, @Res() res: Response) {
+    const order = await this.ordersService.getOrderReceiptData(id);
+    const pdf = await this.reportsService.generateReceipt(order);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename=receipt-${id}.pdf`,
+    });
+
+    res.send(pdf);
   }
 }

@@ -20,6 +20,8 @@ import {
 } from 'src/generated/prisma/client';
 import { JwtPayload } from 'src/auth/model/auth.model';
 import { CloudinaryService } from 'src/infrastructure/cloudinary/cloudinary.service';
+import { ReceiptDto } from '../reports/dto/receipts-dto';
+import { formatDateTimeWIB } from 'src/common/utils/format-date';
 
 @Injectable()
 export class OrdersService {
@@ -363,6 +365,65 @@ export class OrdersService {
 
     return {
       data: updatedOrder,
+    };
+  }
+
+  async getOrderReceiptData(id: string): Promise<ReceiptDto> {
+    const order = await this.prismaService.order.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        createdAt: true,
+        status: true,
+        paymentStatus: true,
+        totalAmount: true,
+        paymentProof: true,
+        paymentMethod: true,
+        user: {
+          select: {
+            fullname: true,
+          },
+        },
+        items: {
+          select: {
+            id: true,
+            quantity: true,
+            salePrice: true,
+            product: {
+              select: {
+                name: true,
+                category: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    const ReceiptItems = order.items.map((item) => ({
+      name: item.product.name,
+      category: item.product.category.name,
+      qty: item.quantity,
+      price: item.salePrice,
+    }));
+
+    return {
+      customerName: order.user.fullname,
+      paymentStatus: order.paymentStatus,
+      serviceFee: 0,
+      transactionId: order.id,
+      transactionDate: formatDateTimeWIB(order.createdAt),
+      pickupNote:
+        'Mohon pesanan diambil sebelum pukul 18:00 WIB. Tunjukkan struk digital ini atau sebutkan ID Transaksi kepada petugas di outlet Warung Pak Jojon',
+      items: ReceiptItems,
     };
   }
 }
