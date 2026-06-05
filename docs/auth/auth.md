@@ -119,11 +119,12 @@ Untuk mendapat data user profil.
   "status": "OK",
   "data": {
     "id": "cuid....",
-    "email": "putri@example.com",
     "fullname": "Putri",
-    "role": "ADMIN",
     "phoneNumber": "0....",
-    "imageUrl": "https://...."
+    "email": "putri@example.com",
+    "address": "address....",
+    "imageUrl": "https://....",
+    "emailVerified": false
   }
 }
 ```

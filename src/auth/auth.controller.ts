@@ -9,16 +9,22 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import type { JwtPayload, RequestWithGoogleUser } from './model/auth.model';
+import type { RequestWithGoogleUser } from './model/auth.model';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { GoogleOauthGuard } from './guard/google-oauth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Message } from 'src/common/decorators/message.decorator';
+import { ApiResponse } from 'src/model/response.model';
+import { User } from 'src/features/users/model/user.model';
+import { UsersService } from 'src/features/users/users.service';
 
 @Controller('/api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @Post('register')
   @Message('Register Succesfully!')
@@ -33,9 +39,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@CurrentUser() user: JwtPayload) {
-    return { data: user };
+  @Get('me')
+  getProfile(
+    @CurrentUser('sub') currentUserid: string,
+  ): Promise<ApiResponse<User>> {
+    return this.userService.getUserById(currentUserid);
   }
 
   @Get('google')

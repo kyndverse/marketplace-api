@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfile } from './dto/update-user-dto';
 import { ApiResponse } from 'src/model/response.model';
-import { UserUpdateResponse } from './model/user.model';
+import { User, UserUpdateResponse } from './model/user.model';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +19,27 @@ export class UsersService {
     });
 
     return newUser;
+  }
+
+  async getUserById(currentUserId: string): Promise<ApiResponse<User>> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: currentUserId },
+      omit: {
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+        imageId: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
+
+    return {
+      data: user,
+    };
   }
 
   async getUserByEmail(email: string) {
