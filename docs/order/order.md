@@ -209,3 +209,11 @@ Untuk upload bukti pembayaran QRIS.
   }
 }
 ```
+---
+## Get Order Receipt
+
+Untuk mendapatkan file pdf receipt order
+
+- Endpoint: `GET /api/orders/:id/receipt`
+
+**Response:** Pdf Receipt
