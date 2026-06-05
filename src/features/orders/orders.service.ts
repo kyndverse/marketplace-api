@@ -178,7 +178,7 @@ export class OrdersService {
           });
         }
 
-        const tax = totalAmount * 0.11;
+        const tax = totalAmount * 0;
         const grandTotal = totalAmount + tax;
 
         const order = await tx.order.create({
