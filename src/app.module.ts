@@ -9,6 +9,7 @@ import { CategoryModule } from './features/category/category.module';
 import { OrdersModule } from './features/orders/orders.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
 import { ReportsModule } from './features/reports/reports.module';
+import { MarketModule } from './features/market/market.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ReportsModule } from './features/reports/reports.module';
     OrdersModule,
     NotificationsModule,
     ReportsModule,
+    MarketModule,
   ],
   controllers: [],
   providers: [],
