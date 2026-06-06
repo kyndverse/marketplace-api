@@ -9,9 +9,10 @@
 ## Endpoint
 
 - [Auth](./docs/auth/auth.md)
-- [User](./docs/user/user.md)
-- [Category](./docs/category/category.md)
-- [Product](./docs/product/product.md)
-- [Order](./docs/order/order.md)
-- [Notification](./docs/notification/notification.md)
-- [About](./docs/about/about.md)
+- [Users](./docs/user/user.md)
+- [Categories](./docs/category/category.md)
+- [Products](./docs/product/product.md)
+- [Orders](./docs/order/order.md)
+- [Notifications](./docs/notification/notification.md)
+- [Abouts](./docs/about/about.md)
+- [Anaylitics](./docs/analytic/analytic.md)
