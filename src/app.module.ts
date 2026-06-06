@@ -10,6 +10,7 @@ import { OrdersModule } from './features/orders/orders.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
 import { ReportsModule } from './features/reports/reports.module';
 import { MarketModule } from './features/market/market.module';
+import { AnalyticsModule } from './features/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MarketModule } from './features/market/market.module';
     NotificationsModule,
     ReportsModule,
     MarketModule,
+    AnalyticsModule,
   ],
   controllers: [],
   providers: [],
