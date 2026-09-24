@@ -82,7 +82,7 @@ Clone the repository:
 
 ```bash
 git clone <repository-url>
-cd pakjojon-api
+cd marketplace-api
 ```
 
 Install dependencies:
@@ -195,34 +195,6 @@ Application logging is handled using **Winston** with integration through NestJS
 
 Logs are used to provide visibility into application behavior and assist with debugging and monitoring during development.
 
-## Testing
-
-The project uses **Jest** as the primary testing framework and **Supertest** for HTTP-level testing.
-
-Run the test suite:
-
-```bash
-yarn test
-```
-
-Run tests in watch mode:
-
-```bash
-yarn test:watch
-```
-
-Generate a coverage report:
-
-```bash
-yarn test:cov
-```
-
-Run end-to-end tests:
-
-```bash
-yarn test:e2e
-```
-
 ## Project Documentation
 
 ```text
@@ -257,7 +229,3 @@ yarn test:e2e
 ```
 
 The root `README.md` provides an overview of the project and instructions for running it, while the `docs/` directory contains detailed API specifications.
-
-## Development Status
-
-This project is currently under development. API contracts, features, and database schemas may change as development progresses.
